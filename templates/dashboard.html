@@ -1,0 +1,152 @@
+<button id ="add-account">
+	Add Account
+</button>
+<div class = "add-account-pop-up">
+	<input id = "account-name" type="text" name="account" value placeholder = "name">
+	<input id = "account-balance" type="text" name="amount" value placeholder = "amount">
+	<div class = "ok-cancel">
+		<div class = "ok"><button id = "ok-add-account">ok</button></div>
+		<div class = "cancel"><button id = "cancel-add-account">cancel</button></div>
+	</div>
+</div>
+
+
+<div class = "add-transaction">
+	<h3>Add Transaction</h3>
+	<select id = "at-type" name="transaction_types">
+			<option value=""></option>
+		{% for t in transaction_types %}
+			<option value="{{t.id}}">{{t.type}}</option>
+		{% endfor %}
+	</select>
+	<div class = "add-transaction">
+		<input id = "at-amount" type="text" name="amount" value placeholder = "amount">
+		<input id = "at-description" type="text" name="description" value placeholder = "description">
+
+	<select id = "at-account">
+			<option value="">select account</option>
+		{% for a in accounts %}
+			<option value="{{a.id}}">{{a.name}}</option>
+		{% endfor %}
+	</select>
+	<select id = "at-from-account">
+			<option value="">select from account</option>
+		{% for a in accounts %}
+			<option value="{{a.id}}">{{a.name}}</option>
+		{% endfor %}
+	</select>
+	<select id = "at-to-account">
+			<option value="">select to account</option>
+		{% for a in accounts %}
+			<option value="{{a.id}}">{{a.name}}</option>
+		{% endfor %}
+	</select>
+
+		<input id = "at-date" type="text" name="date" value placeholder = "date">
+		<div class = "ok-cancel">
+		<div class = "ok"><button id = "ok-add-transaction">ok</button></div>
+		<div class = "cancel"><button id = "cancel-add-transaction">cancel</button></div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class = "accounts">
+	<h3>Accounts</h3>
+
+	<table border="1" style="width:10%;">
+		{% for ua in accounts %}
+		<tr>
+			<td>{{ua.name}}</td>
+			<td>{{ua.balance}}</td>
+		</tr>
+		{% endfor %}
+
+	</table>
+</div>
+<div class = "transactions">
+	<h3>Transactions</h3>
+	<table border="1" style="width:50%;">
+		{% for ut in transactions %}
+		<tr>
+			<td>{{ut.transaction_type}}</td>
+			<td>{{ut.amount}}</td>
+			<td>{{ut.description}}</td>
+			<td>{{ut.account_name}}</td>
+			<td>{{ut.from_account_name}}</td>
+			<td>{{ut.to_account_name}}</td>
+			<td>{{ut.date}}</td>
+			<td><div class = "t_edit"><button id="t_edit" data="apple">edit</button></div></td>
+			<td><div class = "t_delete"><button id = "t_delete">delete</button></div></td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#ok-add-account').click(function() {
+  var name = $('#account-name').val();
+  var balance = $('#account-balance').val();
+	  console.log(name);
+	  console.log(balance);
+		$.ajax({
+			type: "POST",
+			url: "http://127.0.0.1:8000/account/create/",
+			data: {"name":name,"balance":balance},
+		});
+  });
+
+
+
+  $('#ok-add-transaction').click(function() {
+  var type = $('#at-type').val();
+  var amount = $('#at-amount').val();
+  var description = $('#at-description').val();
+  var from_account = $('#at-from-account').val();
+  var to_account = $('#at-to-account').val();
+  var account = $('#at-account').val();
+  var date = $('#at-date').val();
+		$.ajax({
+			type: "POST",
+			url: "http://127.0.0.1:8000/transaction/make/",
+			data: {
+					"transaction_id":type,
+					"amount":amount,
+					"from_account":from_account,
+					"to_account":to_account,
+					"account":account,
+					"description":description,
+					"date":date
+			},
+		});
+  });
+  $('#at-type').change(function() {
+  	var type = $('#at-type').val();
+  		$('#at-from-account').hide();
+  		$('#at-to-account').hide();
+  		$('#at-account').hide();
+  		console.log(typeof(type));
+  		switch(type){
+  			case "1":
+  				$('#at-from-account').show()
+  				break;
+  			case "2":
+  				$('#at-to-account').show()
+  				break;
+  			case "3":
+  				$('#at-from-account').show()
+  				$('#at-to-account').show()
+  				break;
+  			case "4":
+  				$('#at-account').show()
+  				break;
+  			default:
+  				break;
+  		}
+
+  })
+});</script>
